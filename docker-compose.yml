@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  freeclaude:
+    build: .
+    container_name: free-claude-code
+    env_file: .env
+    ports:
+      - "8082:8082"
+    volumes:
+      # 호스트의 현재 폴더를 컨테이너의 /workspace로 마운트하여 코딩 에이전트가 작업할 수 있게 합니다.
+      - .:/workspace
+      - ./src:/app/src
+      # 환경변수(API 키 등) 설정 파일을 연결합니다.
+      - .env:/app/.env
+      # 모델 정보나 에이전트들의 인증 정보 등을 유지하기 위해 로컬 폴더에 영구 저장합니다.
+      - ./data/fcc:/root/.fcc
+      - ./data/claude:/root/.claude
+    environment:
+      # 코딩 에이전트가 접근 허용할 폴더
+      - ALLOWED_DIR=/workspace
+      # FastAPI 서버 등 포트
+      - PORT=8082
+    restart: unless-stopped
